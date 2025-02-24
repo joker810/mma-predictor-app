@@ -1,0 +1,93 @@
+.App {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 20px;
+	text-align: center;
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	transition: all 0.5s ease-in-out;
+  }
+  
+  .App.light {
+	background-color: #fff;
+	color: #333;
+  }
+  
+  .App.dark {
+	background-color: #0D0D0D;
+	color: #00FFFF;
+  }
+  
+  .fight-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 20px;
+  }
+  
+  .fighter-section {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 10px;
+  }
+  
+  .vs {
+	font-size: 2rem;
+	font-weight: bold;
+	color: #b22222;
+	position: relative;
+	z-index: 5;
+  }
+  
+  .odds {
+	font-size: 1rem;
+  }
+  
+  .odds p {
+	margin: 2px 0;
+  }
+  
+  .buttons {
+	display: flex;
+	gap: 20px;
+	justify-content: center;
+	margin-top: 20px;
+	position: relative;
+	z-index: 15;
+  }
+  
+  button {
+	background-color: #b22222;
+	color: #fff;
+	padding: 10px 20px;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 1.2rem;
+	width: 100%;
+	max-width: 150px;
+	transition: all 0.5s ease-in-out;
+  }
+  
+  button:hover {
+	background-color: #8b1a1a;
+  }
+  
+  h3 {
+	margin-top: 20px;
+	font-size: 1.5rem;
+  }
+  
+  @media (min-width: 768px) {
+	.fight-container {
+	  flex-direction: row;
+	  justify-content: center;
+	}
+  
+	button {
+	  width: auto;
+	}
+  }

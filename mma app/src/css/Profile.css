@@ -1,0 +1,162 @@
+.Profile {
+	max-width: 600px;
+	margin: 20px auto;
+	padding: 20px;
+	border-radius: 8px;
+	transition: all 0.5s ease-in-out;
+  }
+  
+  .Profile.light {
+	background-color: #fff;
+	color: #333;
+  }
+  
+  .Profile.dark {
+	background-color: #0D0D0D;
+	color: #00FFFF;
+  }
+  
+  .profile-header {
+	text-align: center;
+	margin-bottom: 30px;
+  }
+  
+  .pic-container {
+	position: relative;
+	display: inline-block;
+	margin-bottom: 15px;
+  }
+  
+  .profile-header img {
+	width: 150px; /* Increased from 120px */
+	height: 150px; /* Increased from 120px */
+	border-radius: 50%;
+	object-fit: cover;
+	border: 3px solid #b22222;
+  }
+  
+  .edit-icon {
+	font-size: 1.2rem;
+	cursor: pointer;
+	color: #b22222;
+	transition: all 0.5s ease-in-out;
+	position: absolute;
+	bottom: 5px;
+	right: 5px;
+	background: rgba(255, 255, 255, 0.8);
+	border-radius: 50%;
+	padding: 2px;
+  }
+  
+  .Profile.dark .edit-icon {
+	color: #00FFFF;
+	background: rgba(13, 13, 13, 0.8);
+  }
+  
+  .field-edit-icon {
+	position: static;
+	margin-left: 8px;
+	background: none;
+	padding: 0;
+  }
+  
+  .edit-icon:hover {
+	color: #8b1a1a;
+  }
+  
+  .Profile.dark .edit-icon:hover {
+	color: #fff;
+  }
+  
+  .profile-header h2 {
+	font-size: 2rem;
+	margin: 0;
+  }
+  
+  .profile-details {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+  }
+  
+  .profile-field {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+  }
+  
+  .profile-field label {
+	font-weight: bold;
+	font-size: 1.1rem;
+  }
+  
+  .profile-field p {
+	margin: 0;
+	display: flex;
+	align-items: center;
+	gap: 5px;
+  }
+  
+  .edit-input {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+  }
+  
+  .profile-field input {
+	padding: 6px;
+	font-size: 1rem;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	transition: all 0.5s ease-in-out;
+	background-color: #fff;
+	color: #333;
+  }
+  
+  .Profile.dark .profile-field input {
+	background-color: #1A1A1A;
+	color: #00FFFF;
+	border-color: #757575;
+  }
+  
+  .profile-field button {
+	background-color: #b22222;
+	color: #fff;
+	padding: 6px 12px;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: all 0.5s ease-in-out;
+  }
+  
+  .profile-field button:hover {
+	background-color: #8b1a1a;
+  }
+  
+  .wallet-actions {
+	display: flex;
+	gap: 10px;
+  }
+  
+  .recent-activity {
+	margin-top: 30px;
+  }
+  
+  .recent-activity h3 {
+	font-size: 1.5rem;
+	margin-bottom: 10px;
+  }
+  
+  .recent-activity ul {
+	list-style: none;
+	padding: 0;
+  }
+  
+  .recent-activity li {
+	padding: 8px 0;
+	border-bottom: 1px solid #ccc;
+  }
+  
+  .Profile.dark .recent-activity li {
+	border-color: #757575;
+  }
