@@ -1,5 +1,5 @@
 .Register {
-	max-width: 400px;
+	max-width: 500px; /* Wider container for larger inputs */
 	margin: 20px auto;
 	padding: 20px;
 	border-radius: 8px;
@@ -25,8 +25,8 @@
 	display: block;
 	width: 100%;
 	margin: 10px 0;
-	padding: 8px;
-	font-size: 1rem;
+	padding: 12px; /* Increased padding */
+	font-size: 1.2rem; /* Larger font */
 	border: 1px solid #ccc;
 	border-radius: 4px;
 	transition: all 0.5s ease-in-out;
@@ -41,7 +41,7 @@
   .Register button {
 	background-color: #b22222;
 	color: #fff;
-	padding: 10px;
+	padding: 12px; /* Larger button */
 	width: 100%;
 	border: none;
 	border-radius: 4px;
@@ -71,4 +71,15 @@
   
   .Register a:hover {
 	text-decoration: underline;
+  }
+  
+  .password-container {
+	position: relative;
+	margin: 10px 0;
+  }
+  
+  .password-container label {
+	display: block;
+	margin-top: 5px;
+	font-size: 0.9rem;
   }

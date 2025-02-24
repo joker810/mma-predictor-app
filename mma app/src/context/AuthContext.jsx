@@ -46,7 +46,7 @@ export function AuthProvider({ children }) {
       return data.user;
     } catch (err) {
       console.error('Update Error:', err.message);
-      throw err; // Let caller handle
+      throw err;
     }
   };
 

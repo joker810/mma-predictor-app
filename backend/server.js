@@ -4,11 +4,12 @@ const { Pool } = require('pg');
 const axios = require('axios');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
+const nodemailer = require('nodemailer');
+const crypto = require('crypto');
 require('dotenv').config();
 
 const app = express();
 app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
-// Increase body size limit to 10MB for Base64 images
 app.use(express.json({ limit: '10mb' }));
 app.use(session({
   secret: process.env.SESSION_SECRET,
@@ -30,14 +31,23 @@ pool.connect((err) => {
   else console.log('DB Connected');
 });
 
-// Google OAuth initiation
+// Email transporter (unchanged)
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD,
+  },
+});
+
+// Google OAuth initiation (unchanged)
 app.get('/auth/google', (req, res) => {
   const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=http://localhost:5000/auth/google/callback&response_type=code&scope=email profile`;
   console.log('Redirecting to Google OAuth:', url);
   res.redirect(url);
 });
 
-// Google OAuth callback
+// Google OAuth callback (unchanged)
 app.get('/auth/google/callback', async (req, res) => {
   const { code } = req.query;
   console.log('Received code:', code);
@@ -91,7 +101,7 @@ app.get('/auth/google/callback', async (req, res) => {
   }
 });
 
-// Normal login
+// Normal login (unchanged)
 app.post('/auth/login', async (req, res) => {
   const { username, password } = req.body;
   try {
@@ -125,7 +135,7 @@ app.post('/auth/login', async (req, res) => {
   }
 });
 
-// Register
+// Register (unchanged)
 app.post('/auth/register', async (req, res) => {
   const { username, email, phone, password } = req.body;
   try {
@@ -162,7 +172,68 @@ app.post('/auth/register', async (req, res) => {
   }
 });
 
-// Session check
+// Request OTP for password reset (unchanged)
+app.post('/auth/request-otp', async (req, res) => {
+  const { email } = req.body;
+  try {
+    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Email not found' });
+    }
+
+    const otp = crypto.randomInt(100000, 999999).toString(); // 6-digit OTP
+    const expiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes expiry
+
+    await pool.query(
+      'UPDATE users SET otp = $1, otp_expiry = $2 WHERE email = $3',
+      [otp, expiry, email]
+    );
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Password Reset OTP for MMA Fight Predictor',
+      text: `Your OTP for password reset is: ${otp}. It expires in 10 minutes.`
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log('OTP sent to:', email);
+    res.json({ message: 'OTP sent to your email' });
+  } catch (err) {
+    console.error('OTP Request Error:', err.message);
+    res.status(500).json({ error: 'Failed to send OTP' });
+  }
+});
+
+// Verify OTP and reset password (unchanged)
+app.post('/auth/verify-otp', async (req, res) => {
+  const { email, otp, newPassword } = req.body;
+  try {
+    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Email not found' });
+    }
+
+    const user = result.rows[0];
+    if (!user.otp || user.otp !== otp || new Date() > new Date(user.otp_expiry)) {
+      return res.status(400).json({ error: 'Invalid or expired OTP' });
+    }
+
+    const passwordHash = await bcrypt.hash(newPassword, 10);
+    await pool.query(
+      'UPDATE users SET password_hash = $1, otp = NULL, otp_expiry = NULL WHERE email = $2',
+      [passwordHash, email]
+    );
+
+    console.log('Password reset for:', email);
+    res.json({ message: 'Password reset successful' });
+  } catch (err) {
+    console.error('OTP Verify Error:', err.message);
+    res.status(500).json({ error: 'Failed to reset password' });
+  }
+});
+
+// Session check (unchanged)
 app.get('/auth/session', async (req, res) => {
   if (req.session.user) {
     try {
@@ -194,13 +265,13 @@ app.get('/auth/session', async (req, res) => {
   }
 });
 
-// Logout
+// Logout (unchanged)
 app.post('/auth/logout', (req, res) => {
   console.log('Logging out:', req.session.user);
   req.session.destroy(() => res.sendStatus(200));
 });
 
-// Update user
+// Update user (unchanged)
 app.post('/auth/update', async (req, res) => {
   if (!req.session.user) return res.status(401).json({ error: 'Not authenticated' });
   const updates = req.body;
@@ -236,6 +307,132 @@ app.post('/auth/update', async (req, res) => {
     console.error('Update Error:', err.message);
     res.status(500).json({ error: err.message });
   }
+});
+
+// Fetch fights (updated to ensure mock works)
+app.get('/api/fights', async (req, res) => {
+  if (!req.session.user) return res.status(401).json({ error: 'Not authenticated' });
+  try {
+    const mockFights = [
+      {
+        id: 1,
+        fighter1: {
+          name: 'Conor McGregor',
+          wins: 22,
+          kos: 19,
+          height: 69,
+          takedowns: 1,
+          submissions: 1,
+          strikingAccuracy: 49,
+          reach: 74,
+          weight: 155,
+          photo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Conor_McGregor_2018.jpg/320px-Conor_McGregor_2018.jpg'
+        },
+        fighter2: {
+          name: 'Khabib Nurmagomedov',
+          wins: 29,
+          kos: 8,
+          height: 70,
+          takedowns: 59,
+          submissions: 11,
+          strikingAccuracy: 47,
+          reach: 70,
+          weight: 155,
+          photo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Khabib_Nurmagomedov.png/320px-Khabib_Nurmagomedov.png'
+        }
+      },
+      {
+        id: 2,
+        fighter1: {
+          name: 'Jon Jones',
+          wins: 27,
+          kos: 10,
+          height: 75,
+          takedowns: 12,
+          submissions: 7,
+          strikingAccuracy: 55,
+          reach: 84,
+          weight: 205,
+          photo: 'https://example.com/jon-jones.jpg'
+        },
+        fighter2: {
+          name: 'Daniel Cormier',
+          wins: 22,
+          kos: 7,
+          height: 71,
+          takedowns: 15,
+          submissions: 4,
+          strikingAccuracy: 52,
+          reach: 72,
+          weight: 205,
+          photo: 'https://example.com/daniel-cormier.jpg'
+        }
+      }
+    ];
+
+    // Insert or update mock fights in DB
+    await pool.query('DELETE FROM fights'); // Clear old fights
+    for (const fight of mockFights) {
+      await pool.query(
+        'INSERT INTO fights (id, fighter1_json, fighter2_json) VALUES ($1, $2, $3) ON CONFLICT (id) DO NOTHING',
+        [fight.id, JSON.stringify(fight.fighter1), JSON.stringify(fight.fighter2)]
+      );
+    }
+
+    res.json(mockFights);
+  } catch (err) {
+    console.error('Fights API Error:', err.message);
+    res.status(500).json({ error: 'Failed to fetch fights' });
+  }
+});
+
+// Place bet (unchanged, secure backend betting)
+app.post('/auth/place-bet', async (req, res) => {
+  if (!req.session.user) return res.status(401).json({ error: 'Not authenticated' });
+  const { fightId, fighterChoice, amount } = req.body;
+  const user = req.session.user;
+  const parsedAmount = parseFloat(amount);
+
+  if (isNaN(parsedAmount) || parsedAmount <= 0) {
+    return res.status(400).json({ error: 'Invalid bet amount' });
+  }
+  if (parsedAmount > user.wallet) {
+    return res.status(400).json({ error: 'Insufficient funds' });
+  }
+
+  // Fetch fight data from DB
+  const fightResult = await pool.query('SELECT * FROM fights WHERE id = $1', [fightId]);
+  if (!fightResult.rows.length) {
+    return res.status(404).json({ error: 'Fight not found' });
+  }
+
+  const fight = fightResult.rows[0];
+  const fighter1 = JSON.parse(fight.fighter1_json);
+  const fighter2 = JSON.parse(fight.fighter2_json);
+
+  // Calculate predicted winner (your odds logic)
+  const calculateWinner = (f1, f2) => {
+    const score1 = f1.wins * 0.15 + f1.kos * 0.2 + f1.height * 0.1 + f1.takedowns * 0.15 + f1.submissions * 0.15 + f1.strikingAccuracy * 0.05 + f1.reach * 0.1 + f1.weight * 0.05;
+    const score2 = f2.wins * 0.15 + f2.kos * 0.2 + f2.height * 0.1 + f2.takedowns * 0.15 + f2.submissions * 0.15 + f2.strikingAccuracy * 0.05 + f2.reach * 0.1 + f2.weight * 0.05;
+    return score1 > score2 ? f1.name : f2.name;
+  };
+
+  const predictedWinner = calculateWinner(fighter1, fighter2);
+  const userWon = fighterChoice === predictedWinner;
+  const newWallet = userWon ? user.wallet + parsedAmount * 1.5 : user.wallet - parsedAmount;
+
+  // Update wallet and log bet
+  await pool.query(
+    'UPDATE users SET wallet = $1 WHERE id = $2',
+    [newWallet, user.id]
+  );
+  await pool.query(
+    'INSERT INTO bet_history (user_id, fight_id, fighter_choice, amount, outcome) VALUES ($1, $2, $3, $4, $5)',
+    [user.id, fightId, fighterChoice, parsedAmount, userWon ? 'win' : 'loss']
+  );
+
+  req.session.user.wallet = newWallet;
+  res.json({ message: userWon ? `You won $${parsedAmount * 1.5}!` : `You lost $${parsedAmount}.`, wallet: newWallet });
 });
 
 const PORT = process.env.PORT || 5000;

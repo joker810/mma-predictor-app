@@ -1,21 +1,16 @@
 import React, { useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import { useNavigate } from 'react-router-dom';
 import '../css/Profile.css';
 
 function Profile() {
   const { user, updateUser } = useAuth();
   const { theme } = useTheme();
-  const navigate = useNavigate();
   const [editField, setEditField] = useState(null);
   const [tempValue, setTempValue] = useState('');
   const fileInputRef = useRef(null);
 
-  if (!user) {
-    navigate('/login');
-    return null;
-  }
+  // Removed useEffect and alert—App.jsx handles redirection
 
   const startEdit = (field, currentValue) => {
     setEditField(field);

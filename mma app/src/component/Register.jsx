@@ -10,6 +10,8 @@ function Register() {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [rePassword, setRePassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // New state for password visibility
+  const [showRePassword, setShowRePassword] = useState(false); // New state for re-entered password
   const { login } = useAuth();
   const { theme } = useTheme();
   const navigate = useNavigate();
@@ -51,6 +53,7 @@ function Register() {
         value={username}
         onChange={(e) => setUsername(e.target.value)}
         required
+        style={{ width: '100%', padding: '12px', fontSize: '1.2rem' }} // Larger input
       />
       <input
         type="email"
@@ -58,6 +61,7 @@ function Register() {
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         required
+        style={{ width: '100%', padding: '12px', fontSize: '1.2rem' }} // Larger input
       />
       <input
         type="text"
@@ -65,21 +69,46 @@ function Register() {
         value={phone}
         onChange={(e) => setPhone(e.target.value)}
         required
+        style={{ width: '100%', padding: '12px', fontSize: '1.2rem' }} // Larger input
       />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      />
-      <input
-        type="password"
-        placeholder="Re-enter Password"
-        value={rePassword}
-        onChange={(e) => setRePassword(e.target.value)}
-        required
-      />
+      <div className="password-container">
+        <input
+          type={showPassword ? 'text' : 'password'} // Toggle visibility
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          style={{ width: '100%', padding: '12px', fontSize: '1.2rem' }} // Larger input
+        />
+        <label>
+          <input
+            type="checkbox"
+            checked={showPassword}
+            onChange={(e) => setShowPassword(e.target.checked)}
+            style={{ marginLeft: '10px' }}
+          />
+          Show Password
+        </label>
+      </div>
+      <div className="password-container">
+        <input
+          type={showRePassword ? 'text' : 'password'} // Toggle visibility
+          placeholder="Re-enter Password"
+          value={rePassword}
+          onChange={(e) => setRePassword(e.target.value)}
+          required
+          style={{ width: '100%', padding: '12px', fontSize: '1.2rem' }} // Larger input
+        />
+        <label>
+          <input
+            type="checkbox"
+            checked={showRePassword}
+            onChange={(e) => setShowRePassword(e.target.checked)}
+            style={{ marginLeft: '10px' }}
+          />
+          Show Password
+        </label>
+      </div>
       <button onClick={handleRegister}>Register</button>
       <p>Already have an account? <a href="/login">Login</a></p>
     </div>
