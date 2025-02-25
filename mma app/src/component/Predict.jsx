@@ -24,13 +24,16 @@ function Predict() {
         setError(null);
         const response = await fetch('http://localhost:5000/api/fights', { credentials: 'include' });
         if (!response.ok) {
+          const errorText = await response.text();
+          console.log('Fetch fights failed:', response.status, errorText);
           if (response.status === 401) {
             navigate('/login');
             return;
           }
-          throw new Error(`Failed to fetch fights: ${response.status} ${response.statusText}`);
+          throw new Error(`Failed to fetch fights: ${response.status} ${errorText}`);
         }
         const data = await response.json();
+        console.log('Fetched fights:', data);
         setFights(data);
         const initialOdds = {};
         const initialChoices = {};
@@ -117,67 +120,74 @@ function Predict() {
 
   return (
     <div className={`Predict ${theme}`}>
-      {fights.map((fight) => (
-        <div key={fight.id} className="fight-container">
-          <div className="fighter-section">
-            <FighterCard fighter={fight.fighter1} />
-            <div className="odds">
-              <p>Odds: {odds[fight.id]?.fighter1 || 50}%</p>
-              <p>{odds[fight.id]?.fighter1 > odds[fight.id]?.fighter2 ? 'Favorite' : 'Underdog'}</p>
+      {fights.map((fight, index) => (
+        <React.Fragment key={fight.id}>
+          <div className="fight-container">
+            <div className="fighter-section">
+              <FighterCard fighter={fight.fighter1} />
+              <div className="odds">
+                <p>Odds: {odds[fight.id]?.fighter1 || 50}%</p>
+                <p>{odds[fight.id]?.fighter1 > odds[fight.id]?.fighter2 ? 'Favorite' : 'Underdog'}</p>
+              </div>
+            </div>
+            <div className="vs">VS</div>
+            <div className="fighter-section">
+              <FighterCard fighter={fight.fighter2} />
+              <div className="odds">
+                <p>Odds: {odds[fight.id]?.fighter2 || 50}%</p>
+                <p>{odds[fight.id]?.fighter2 > odds[fight.id]?.fighter1 ? 'Favorite' : 'Underdog'}</p>
+              </div>
+            </div>
+            <div className="predict-actions">
+              <button onClick={() => calculateOddsForFight(fight.id, fight.fighter1, fight.fighter2)} disabled={!user}>
+                Predict
+              </button>
+              <div className="bet-section">
+                <label>
+                  Select Fighter to Bet On:
+                  <div>
+                    <input
+                      type="radio"
+                      name={`fighter-${fight.id}`}
+                      value={fight.fighter1.name}
+                      checked={userChoices[fight.id] === fight.fighter1.name}
+                      onChange={(e) => setUserChoices(prev => ({ ...prev, [fight.id]: e.target.value }))}
+                      disabled={!user}
+                    />
+                    {fight.fighter1.name}
+                  </div>
+                  <div>
+                    <input
+                      type="radio"
+                      name={`fighter-${fight.id}`}
+                      value={fight.fighter2.name}
+                      checked={userChoices[fight.id] === fight.fighter2.name}
+                      onChange={(e) => setUserChoices(prev => ({ ...prev, [fight.id]: e.target.value }))}
+                      disabled={!user}
+                    />
+                    {fight.fighter2.name}
+                  </div>
+                </label>
+                <input
+                  type="number"
+                  placeholder="Bet Amount"
+                  value={betAmounts[fight.id] || ''}
+                  onChange={(e) => setBetAmounts(prev => ({ ...prev, [fight.id]: e.target.value }))}
+                  style={{ margin: '10px 0', padding: '8px', width: '100px' }}
+                  disabled={!user}
+                />
+                <button onClick={() => handleBet(fight.id)} disabled={!user}>Bet</button>
+              </div>
+              {winner[fight.id] && <h3>Predicted Winner: {winner[fight.id]}</h3>}
+              {betResults[fight.id] && <p className="bet-result">{betResults[fight.id]}</p>}
             </div>
           </div>
-          <div className="vs">VS</div>
-          <div className="fighter-section">
-            <FighterCard fighter={fight.fighter2} />
-            <div className="odds">
-              <p>Odds: {odds[fight.id]?.fighter2 || 50}%</p>
-              <p>{odds[fight.id]?.fighter2 > odds[fight.id]?.fighter1 ? 'Favorite' : 'Underdog'}</p>
+          {index < fights.length - 1 && (
+            <div className={`fight-separator ${theme}`} data-debug="separator">
+              <span style={{ display: 'none' }}>Separator Debug</span>
             </div>
-          </div>
-          <div className="predict-actions">
-            <button onClick={() => calculateOddsForFight(fight.id, fight.fighter1, fight.fighter2)} disabled={!user}>
-              Predict
-            </button>
-            <div className="bet-section">
-              <label>
-                Select Fighter to Bet On:
-                <div>
-                  <input
-                    type="radio"
-                    name={`fighter-${fight.id}`}
-                    value={fight.fighter1.name}
-                    checked={userChoices[fight.id] === fight.fighter1.name}
-                    onChange={(e) => setUserChoices(prev => ({ ...prev, [fight.id]: e.target.value }))}
-                    disabled={!user}
-                  />
-                  {fight.fighter1.name}
-                </div>
-                <div>
-                  <input
-                    type="radio"
-                    name={`fighter-${fight.id}`}
-                    value={fight.fighter2.name}
-                    checked={userChoices[fight.id] === fight.fighter2.name}
-                    onChange={(e) => setUserChoices(prev => ({ ...prev, [fight.id]: e.target.value }))}
-                    disabled={!user}
-                  />
-                  {fight.fighter2.name}
-                </div>
-              </label>
-              <input
-                type="number"
-                placeholder="Bet Amount"
-                value={betAmounts[fight.id] || ''}
-                onChange={(e) => setBetAmounts(prev => ({ ...prev, [fight.id]: e.target.value }))}
-                style={{ margin: '10px 0', padding: '8px', width: '100px' }}
-                disabled={!user}
-              />
-              <button onClick={() => handleBet(fight.id)} disabled={!user}>Bet</button>
-            </div>
-            {winner[fight.id] && <h3>Predicted Winner: {winner[fight.id]}</h3>}
-            {betResults[fight.id] && <p className="bet-result">{betResults[fight.id]}</p>}
-          </div>
-        </div>
+          )}
+        </React.Fragment>
       ))}
     </div>
   );

@@ -1,71 +1,119 @@
+/* Ensure @import is at the top */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
 .FighterCard-wrapper {
-	width: 100%;
-	max-width: 300px;
-	position: relative;
+  width: 100%;
+  max-width: 250px; /* Keep the width compact */
+  position: relative;
+  transition: all 0.3s ease-in-out; /* Sync transition */
+}
+
+.FighterCard-wrapper.light .FighterCard {
+  border-radius: 10px; /* Slightly smaller radius for compact design */
+  width: 100%;
+  padding: 8px; /* Reduced padding for shorter height */
+  text-align: center;
+  cursor: default; /* No interactivity */
+  position: relative;
+  overflow: hidden;
+  background-size: cover !important; /* Ensure photo covers the entire card */
+  background-position: center !important; /* Center the photo */
+  background-repeat: no-repeat !important; /* Prevent tiling */
+  max-height: 300px; /* Reduced height for shorter cards */
+  background: linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)), url('https://www.transparenttextures.com/patterns/grid-me.png') !important; /* Brighter white overlay with !important */
+  box-shadow: 0 0 30px rgba(255, 105, 180, 1), 0 0 50px rgba(255, 105, 180, 0.9) !important; /* Strong pink glow with !important */
+  color: #ff69b4 !important; /* Bright pink text with !important */
+  transition: all 0.3s ease-in-out; /* Sync transition */
+}
+
+.FighterCard-wrapper.dark .FighterCard {
+  border-radius: 10px; /* Slightly smaller radius for compact design */
+  width: 100%;
+  padding: 8px; /* Reduced padding for shorter height */
+  text-align: center;
+  cursor: default; /* No interactivity */
+  position: relative;
+  overflow: hidden;
+  background-size: cover !important; /* Ensure photo covers the entire card */
+  background-position: center !important; /* Center the photo */
+  background-repeat: no-repeat !important; /* Prevent tiling */
+  max-height: 300px; /* Reduced height for shorter cards */
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://www.transparenttextures.com/patterns/grid-me.png') !important; /* Dark overlay with grid for dark mode with !important */
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3) !important; /* Cyan glow shadow with !important */
+  color: #00FFFF !important; /* Cyan text with !important */
+  transition: all 0.3s ease-in-out; /* Sync transition */
+}
+
+.card-overlay {
+  position: relative;
+  z-index: 1; /* Ensure overlay is above the photo */
+  background: rgba(0, 0, 0, 0.5) !important; /* Semi-transparent black overlay for dark mode with !important */
+  border-radius: 10px;
+  padding: 5px; /* Reduced padding for compactness */
+  transition: all 0.3s ease-in-out; /* Sync transition */
+}
+
+.FighterCard-wrapper.light .card-overlay {
+  background: rgba(255, 255, 255, 0.95) !important; /* Brighter white overlay for light mode with !important */
+}
+
+.fighter-info {
+  padding: 5px 0; /* Reduced padding for compactness */
+  transition: all 0.3s ease-in-out; /* Sync transition */
+}
+
+.fighter-name {
+  font-size: 1.3rem; /* Slightly smaller for compactness and shorter height */
+  font-family: 'Orbitron', sans-serif; /* Futuristic font */
+  margin: 5px 0; /* Reduced margin for shorter height */
+  text-shadow: 0 0 10px rgba(255, 105, 180, 1), 0 0 20px rgba(255, 105, 180, 0.9) !important; /* Strong pink glow for light with !important */
+}
+
+.FighterCard-wrapper.dark .fighter-name {
+  text-shadow: 0 0 5px rgba(0, 255, 255, 0.7), 0 0 10px rgba(0, 255, 255, 0.5) !important; /* Neon glow for dark with !important */
+}
+
+.main-stats, .extra-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Two-column layout for stats */
+  gap: 2px; /* Reduced gap for compactness */
+  font-family: 'Arial', sans-serif;
+  font-size: 0.7rem; /* Smaller font for shorter, compact design */
+  margin: 5px 0; /* Reduced margin for shorter height */
+  transition: all 0.3s ease-in-out; /* Sync transition */
+}
+
+.FighterCard-wrapper.light .main-stats, .FighterCard-wrapper.light .extra-stats {
+  color: #ff69b4 !important; /* Bright pink text for visibility with !important */
+}
+
+.FighterCard-wrapper.dark .main-stats, .FighterCard-wrapper.dark .extra-stats {
+  color: #00FFFF !important; /* Cyan text with !important */
+}
+
+.extra-stats {
+  display: grid; /* Ensure extra stats are always shown */
+}
+
+.neon-border {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px; /* Match card radius */
+  box-shadow: 0 0 30px #ff69b4, 0 0 50px #ff69b4, 0 0 70px #ff69b4 !important; /* Strong pink neon glow for light with !important */
+  pointer-events: none;
+  z-index: 0;
+  transition: all 0.3s ease-in-out; /* Sync transition */
+}
+
+.FighterCard-wrapper.dark .neon-border {
+  box-shadow: 0 0 15px #00FFFF, 0 0 25px #00FFFF, 0 0 40px #00FFFF !important; /* Cyan neon glow for dark with !important */
+}
+
+@media (min-width: 768px) {
+  .FighterCard-wrapper {
+    width: 250px; /* Maintain smaller size on larger screens */
   }
-  
-  .FighterCard {
-	border: 2px solid #b22222;
-	border-radius: 8px;
-	width: 100%;
-	padding: 15px;
-	text-align: center;
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-	transition: all 0.5s ease-in-out;
-	max-height: 350px;
-	overflow: hidden;
-	cursor: pointer;
-	position: relative;
-	z-index: 1;
-  }
-  
-  .FighterCard.light {
-	background-color: #fff;
-	color: #333;
-  }
-  
-  .FighterCard.dark {
-	background-color: #0D0D0D; /* Slightly lighter than main dark */
-	color: #00FFFF;
-  }
-  
-  .fighter-photo {
-	width: 100%;
-	height: 200px;
-	object-fit: cover;
-	border-radius: 4px;
-  }
-  
-  .FighterCard h2 {
-	font-size: 1.5rem;
-	margin: 10px 0;
-  }
-  
-  .stats p {
-	margin: 3px 0;
-	font-size: 1rem;
-  }
-  
-  .extra-stats {
-	display: none;
-  }
-  
-  .FighterCard.expanded {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	max-height: 500px;
-	z-index: 20;
-	box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
-  }
-  
-  .FighterCard.expanded .extra-stats {
-	display: block;
-  }
-  
-  @media (min-width: 768px) {
-	.FighterCard-wrapper {
-	  width: 300px;
-	}
-  }
+}
